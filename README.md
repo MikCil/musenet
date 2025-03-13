@@ -1,2 +1,2 @@
-# musenet
-Un "social network" educativo per l'insegnamento della mitologia
+# Musenet
+Un "social network" educativo per l'insegnamento della mitologia.
