@@ -1,6 +1,6 @@
 # Musenet - Social network educativo per la Mitologia Greca
 
-[Musenet Logo](https://github.com/MikCil/musenet/blob/main/assets/musenet.jpeg?raw=true)
+![Musenet Logo](https://github.com/MikCil/musenet/blob/main/assets/musenet.jpeg?raw=true)
 
 ## 🏛️ Panoramica
 
