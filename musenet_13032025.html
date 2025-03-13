@@ -1,0 +1,1811 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Musenet</title>
+    <link rel="icon" href="https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/81pKWEZeGkzQ60eyxyXW/pub/rzaAadq8HWDqcmcibJ0b.jpeg" type="image/jpeg">
+    <style>
+        :root {
+            --primary-color: #4c1d5a;
+            --secondary-color: #6d2a80;
+            --text-color: #f5f5f5;
+            --border-color: #8c3aaa;
+            --bg-color: #4c1d5a;
+            --card-bg: #5c2870;
+            --input-bg: #371644;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-color);
+            color: var(--text-color);
+            min-height: 100vh;
+        }
+
+        header {
+            padding: 15px;
+            background-color: var(--primary-color);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid var(--border-color);
+            position: sticky;
+            top: 0;
+            z-index: 100;
+        }
+
+        .header-title {
+            font-size: 24px;
+            font-weight: bold;
+        }
+
+        .header-left {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+        }
+
+        .burger-menu {
+            font-size: 24px;
+            cursor: pointer;
+        }
+
+        .add-button {
+            background-color: #ffffff;
+            color: var(--primary-color);
+            border: none;
+            border-radius: 20px;
+            padding: 8px 15px;
+            font-weight: bold;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .search-container {
+            margin: 15px;
+            position: relative;
+        }
+
+        .search-input {
+            width: 100%;
+            padding: 12px 15px 12px 40px;
+            background-color: var(--input-bg);
+            border: none;
+            border-radius: 10px;
+            color: var(--text-color);
+            font-size: 16px;
+        }
+
+        .search-icon {
+            position: absolute;
+            left: 15px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: #aaa;
+        }
+
+        .profiles-grid, .posts-list {
+            padding: 10px 15px;
+            padding-bottom: 130px; /* Increased padding at the bottom for footer and comment form */
+        }
+
+        .profile-card {
+            text-align: center;
+            padding: 10px;
+            cursor: pointer;
+        }
+
+        .profile-card img {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-bottom: 5px;
+        }
+
+        .profile-avatar {
+            position: relative;
+            display: inline-block;
+        }
+
+        .more-options {
+            position: absolute;
+            right: 0;
+            top: 0;
+            background-color: transparent;
+            border: none;
+            color: var(--text-color);
+            font-size: 20px;
+            cursor: pointer;
+        }
+
+        .username {
+            color: #aaa;
+            font-size: 14px;
+            margin-bottom: 3px;
+        }
+
+        .profile-name {
+            font-weight: bold;
+            margin-bottom: 3px;
+        }
+
+        .profile-description {
+            font-size: 14px;
+            color: #ddd;
+        }
+
+        .profiles-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+        }
+
+        .post-item {
+            background-color: var(--card-bg);
+            border-radius: 10px;
+            padding: 15px;
+            margin-bottom: 15px;
+            cursor: pointer;
+        }
+
+        .post-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+
+        .post-header img {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            margin-right: 10px;
+        }
+
+        /* New layout for post content with side-by-side design */
+        .post-content {
+            margin-bottom: 10px;
+            display: flex;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .post-text {
+            flex: 1;
+            min-width: 200px;
+        }
+
+        .post-image-container {
+            width: 120px;
+            height: 120px;
+            flex-shrink: 0;
+            overflow: hidden;
+            border-radius: 8px;
+        }
+
+        .post-image {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 8px;
+        }
+
+        /* For detailed post view, we keep the full-width image */
+        .post-detail-image {
+            width: 100%;
+            max-height: 350px; /* Limit image height */
+            border-radius: 10px;
+            margin: 15px 0;
+            object-fit: contain; /* Keep original aspect ratio */
+        }
+
+        .post-meta {
+            color: #aaa;
+            font-size: 14px;
+        }
+
+        .post-detail-header {
+            display: flex;
+            align-items: center;
+            padding: 15px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .back-button {
+            margin-right: 15px;
+            font-size: 20px;
+            cursor: pointer;
+        }
+
+        /* Content area for post details with proper scrolling */
+        .post-detail-content {
+            padding: 15px;
+            padding-bottom: 180px; /* Extra padding to ensure content is scrollable past the comment form */
+            overflow-y: auto;
+        }
+
+        .post-detail-text {
+            margin-bottom: 15px;
+            font-size: 16px;
+            line-height: 1.5;
+        }
+
+        .post-date {
+            color: #aaa;
+            font-size: 14px;
+            margin-bottom: 15px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .comments-section {
+            margin-top: 20px;
+        }
+
+        .comments-title {
+            margin-bottom: 15px;
+            font-size: 18px;
+        }
+
+        .comment {
+            display: flex;
+            margin-bottom: 15px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .comment img {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            margin-right: 10px;
+            flex-shrink: 0;
+        }
+
+        .comment-content {
+            flex-grow: 1;
+        }
+
+        .comment-author {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+
+        .comment-date {
+            color: #aaa;
+            font-size: 12px;
+            margin-left: 10px;
+        }
+
+        .comment-text {
+            font-size: 14px;
+            line-height: 1.4;
+        }
+
+        /* Modified comment form with absolute positioning instead of fixed */
+        .comment-form {
+            position: fixed;
+            bottom: 60px; /* Position above the footer navigation */
+            left: 0;
+            right: 0;
+            padding: 15px;
+            background-color: var(--bg-color);
+            border-top: 1px solid var(--border-color);
+            z-index: 90;
+        }
+
+        .comment-input {
+            width: 100%;
+            background-color: var(--input-bg);
+            border: none;
+            border-radius: 10px;
+            padding: 15px;
+            color: var(--text-color);
+            font-size: 14px;
+            margin-bottom: 10px;
+        }
+
+        .user-selector {
+            width: 100%;
+            background-color: var(--input-bg);
+            border: none;
+            border-radius: 10px;
+            padding: 10px;
+            color: var(--text-color);
+            font-size: 14px;
+            margin-bottom: 10px;
+        }
+
+        .submit-button {
+            background-color: #ffffff;
+            color: var(--primary-color);
+            border: none;
+            border-radius: 20px;
+            padding: 8px 15px;
+            font-weight: bold;
+            cursor: pointer;
+        }
+
+        .profile-detail {
+            padding: 20px 15px;
+            padding-bottom: 80px; /* Add padding at the bottom for footer */
+        }
+
+        .profile-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+        .profile-header img {
+            width: 80px;
+            height: 80px;
+            border-radius: 50%;
+            margin-right: 15px;
+        }
+
+        .profile-info h1 {
+            font-size: 22px;
+            margin-bottom: 5px;
+        }
+
+        .profile-info p {
+            color: #ddd;
+            font-size: 16px;
+        }
+
+        .profile-bio {
+            margin-top: 20px;
+            line-height: 1.5;
+        }
+
+        .bio-title {
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .footer-nav {
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            display: flex;
+            justify-content: space-around;
+            padding: 10px;
+            background-color: var(--bg-color);
+            border-top: 1px solid var(--border-color);
+            z-index: 100;
+        }
+
+        .nav-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            text-decoration: none;
+            color: #aaa;
+            font-size: 12px;
+        }
+
+        .nav-item.active {
+            color: var(--text-color);
+        }
+
+        .nav-icon {
+            font-size: 20px;
+            margin-bottom: 5px;
+        }
+
+        .form-container {
+            padding: 20px 15px;
+            padding-bottom: 80px; /* Add padding at the bottom for footer */
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: bold;
+        }
+
+        .form-input, .form-textarea {
+            width: 100%;
+            background-color: var(--input-bg);
+            border: none;
+            border-radius: 10px;
+            padding: 12px;
+            color: var(--text-color);
+            font-size: 14px;
+        }
+
+        .form-textarea {
+            min-height: 100px;
+            resize: vertical;
+        }
+
+        .form-submit {
+            background-color: #ffffff;
+            color: var(--primary-color);
+            border: none;
+            border-radius: 20px;
+            padding: 10px 20px;
+            font-weight: bold;
+            cursor: pointer;
+            margin-top: 15px;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        .app-logo {
+            text-align: center;
+            padding: 20px;
+        }
+
+        .app-logo img {
+            width: 120px;
+            height: 120px;
+            border-radius: 24px; /* Rounded corners for the logo */
+            object-fit: cover;
+        }
+
+        /* Main container should be scrollable */
+        #app {
+            position: relative;
+            height: 100vh;
+            overflow-y: auto;
+        }
+
+        /* Loading indicator */
+        .loading {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: var(--bg-color);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            z-index: 1000;
+        }
+
+        .loading-spinner {
+            border: 5px solid rgba(255,255,255,0.1);
+            border-radius: 50%;
+            border-top: 5px solid #fff;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin-top: 20px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .hashtag {
+            color: #7289da;
+        }
+
+        .mention {
+            color: #7289da;
+        }
+
+        /* Emoji */
+        .emoji {
+            font-size: 1.2em;
+        }
+
+        /* Link styles */
+        a {
+            color: #7289da;
+            text-decoration: none;
+        }
+
+        a:hover {
+            text-decoration: underline;
+        }
+
+        /* Ensure main content areas are scrollable */
+        #profiles-view, #posts-view, #profile-detail-view, #post-detail-view, 
+        #add-profile-view, #add-post-view {
+            height: 100%;
+            overflow-y: auto;
+            padding-bottom: 60px; /* Space for footer */
+        }
+
+        /* Media query for very small screens */
+        @media (max-width: 350px) {
+            .post-image-container {
+                width: 100px;
+                height: 100px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div id="app">
+        <!-- Loading Screen -->
+        <div id="loading-screen" class="loading">
+            <div class="app-logo">
+                <img src="https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/81pKWEZeGkzQ60eyxyXW/pub/rzaAadq8HWDqcmcibJ0b.jpeg" alt="Musenet Logo">
+            </div>
+            <div class="loading-spinner"></div>
+        </div>
+
+        <!-- Profiles View -->
+        <div id="profiles-view">
+            <header>
+                <div class="header-left">
+                    <div class="burger-menu">☰</div>
+                    <div class="header-title">Musenet</div>
+                </div>
+                <button class="add-button" id="add-profile-btn">+ Add</button>
+            </header>
+            <div class="search-container">
+                <span class="search-icon">🔍</span>
+                <input type="text" class="search-input" placeholder="Cerca" id="profile-search">
+            </div>
+            <div class="profiles-grid" id="profiles-grid">
+                <!-- Profiles will be loaded here dynamically -->
+            </div>
+        </div>
+
+        <!-- Posts View -->
+        <div id="posts-view" class="hidden">
+            <header>
+                <div class="header-left">
+                    <div class="burger-menu">☰</div>
+                    <div class="header-title">Musenet</div>
+                </div>
+                <button class="add-button" id="add-post-btn">+ Add</button>
+            </header>
+            <div class="search-container">
+                <span class="search-icon">🔍</span>
+                <input type="text" class="search-input" placeholder="Cerca" id="post-search">
+            </div>
+            <div class="posts-list" id="posts-list">
+                <!-- Posts will be loaded here dynamically -->
+            </div>
+        </div>
+
+        <!-- Profile Detail View -->
+        <div id="profile-detail-view" class="hidden">
+            <header>
+                <div class="header-left">
+                    <div class="back-button" id="back-from-profile">←</div>
+                    <div class="header-title">Profile</div>
+                </div>
+                <button class="more-options">⋯</button>
+            </header>
+            <div class="profile-detail" id="profile-detail-content">
+                <!-- Profile details will be loaded here dynamically -->
+            </div>
+        </div>
+
+        <!-- Post Detail View -->
+        <div id="post-detail-view" class="hidden">
+            <header>
+                <div class="header-left">
+                    <div class="back-button" id="back-from-post">←</div>
+                    <div class="header-title">Post</div>
+                </div>
+                <button class="more-options">⋯</button>
+            </header>
+            <div class="post-detail-content" id="post-detail-content">
+                <!-- Post details will be loaded here dynamically -->
+            </div>
+            <div class="comment-form">
+                <select class="user-selector" id="comment-user-selector">
+                    <!-- User options will be loaded here dynamically -->
+                </select>
+                <input type="text" class="comment-input" placeholder="Pensieri olimpici..." id="comment-input">
+                <button class="submit-button" id="submit-comment">Commenta</button>
+            </div>
+        </div>
+
+        <!-- Add Profile Form -->
+        <div id="add-profile-view" class="hidden">
+            <header>
+                <div class="header-left">
+                    <div class="back-button" id="back-from-add-profile">←</div>
+                    <div class="header-title">Add Profile</div>
+                </div>
+            </header>
+            <div class="form-container">
+                <div class="form-group">
+                    <label class="form-label">Username</label>
+                    <input type="text" class="form-input" id="profile-username" placeholder="@username">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Name</label>
+                    <input type="text" class="form-input" id="profile-name" placeholder="Name">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Description</label>
+                    <input type="text" class="form-input" id="profile-description" placeholder="Description">
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Bio</label>
+                    <textarea class="form-textarea" id="profile-bio" placeholder="Bio"></textarea>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Avatar URL</label>
+                    <input type="text" class="form-input" id="profile-avatar" placeholder="URL">
+                </div>
+                <button class="form-submit" id="save-profile">Save Profile</button>
+            </div>
+        </div>
+
+        <!-- Add Post Form -->
+        <div id="add-post-view" class="hidden">
+            <header>
+                <div class="header-left">
+                    <div class="back-button" id="back-from-add-post">←</div>
+                    <div class="header-title">Add Post</div>
+                </div>
+            </header>
+            <div class="form-container">
+                <div class="form-group">
+                    <label class="form-label">As Profile</label>
+                    <select class="form-input" id="post-as-profile">
+                        <!-- Profiles will be loaded here dynamically -->
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Content</label>
+                    <textarea class="form-textarea" id="post-content" placeholder="What's on your mind?"></textarea>
+                </div>
+                <div class="form-group">
+                    <label class="form-label">Image URL (optional)</label>
+                    <input type="text" class="form-input" id="post-image" placeholder="URL">
+                </div>
+                <button class="form-submit" id="save-post">Save Post</button>
+            </div>
+        </div>
+
+        <!-- Footer Navigation -->
+        <div class="footer-nav">
+            <a href="#" class="nav-item active" id="nav-profiles">
+                <div class="nav-icon">📁</div>
+                <div>Profiles</div>
+            </a>
+            <a href="#" class="nav-item" id="nav-posts">
+                <div class="nav-icon">📰</div>
+                <div>Posts</div>
+            </a>
+        </div>
+    </div>
+
+    <script>
+        // Data storage using localStorage
+        const dataManager = {
+            init() {
+                // Initialize Figures (Profiles)
+                if (!localStorage.getItem('mythologyProfiles')) {
+                    const mythologyProfiles = [
+                        {
+                            id: 'zeus',
+                            username: '@thunderboss',
+                            name: 'Zeus',
+                            description: 'Re dell\'Olimpo ⚡',
+                            bio: 'Sposato con mia sorella @Era (è complicato). Non chiedetemi previsioni meteo in DM.',
+                            avatar: 'https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/81pKWEZeGkzQ60eyxyXW/pub/bQJhu1eaOLr0ri9oG2dq.jpeg'
+                        },
+                        {
+                            id: 'era',
+                            username: '@queenbehavior',
+                            name: 'Era',
+                            description: 'Regina degli Dei 👑',
+                            bio: 'Moglie di @Zeus. Se sei nei DM di mio marito, ti tengo d\'occhio.',
+                            avatar: 'https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/81pKWEZeGkzQ60eyxyXW/pub/UxWODAzF5H0vuZVNWJcI.jpeg'
+                        },
+                        {
+                            id: 'poseidone',
+                            username: '@WaveLord',
+                            name: 'Poseidone',
+                            description: 'Dio del Mare 🌊',
+                            bio: 'Non sono il fratello minore di nessuno. Team #acquario forever.',
+                            avatar: 'https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/81pKWEZeGkzQ60eyxyXW/pub/YKOq1TcckRNIFP2Xi7KD.jpeg'
+                        },
+                        {
+                            id: 'apollo',
+                            username: '@sunnyvibes',
+                            name: 'Apollo',
+                            description: 'Dio del Sole ☀️',
+                            bio: 'Poeta, musicista, arciere, medico... e anche modesto. Seguito da 9 Muse verificate. Mandami le tue poesie!',
+                            avatar: 'https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/81pKWEZeGkzQ60eyxyXW/pub/9bfDwevOTv6C4Ck7FLhO.jpeg'
+                        },
+                        {
+                            id: 'atena',
+                            username: '@strategybrain',
+                            name: 'Atena',
+                            description: 'Dea della saggezza 🦉',
+                            bio: 'Consulente strategica. No, non ti aiuto con i compiti. Orgogliosa mamma gufo.',
+                            avatar: 'https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/81pKWEZeGkzQ60eyxyXW/pub/kQGtOWowh8iFPwDttswQ.jpeg'
+                        },
+                        {
+                            id: 'afrodite',
+                            username: '@beautyqueen',
+                            name: 'Afrodite',
+                            description: 'Dea dell\'Amore & Bellezza 💝',
+                            bio: 'Certified beauty queen™. Troppo bella per i filtri. Apple addicted ✨',
+                            avatar: 'https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/81pKWEZeGkzQ60eyxyXW/pub/phNWO9yzZBSbz50sa7ny.jpeg'
+                        },
+                        {
+                            id: 'ade',
+                            username: '@UnderworldCEO',
+                            name: 'Ade',
+                            description: 'Re degli Inferi 💀',
+                            bio: 'Il tuo futuro padrone di casa. Non sono così male come dicono. Amante dei cani. Marito di @Persefone',
+                            avatar: 'https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/81pKWEZeGkzQ60eyxyXW/pub/doPHFDttzY5HbO1KTeLc.jpeg'
+                        },
+                        {
+                            id: 'efesto',
+                            username: '@forgemaster',
+                            name: 'Efesto',
+                            description: 'Fabbro Divino 🔨',
+                            bio: 'Qualità > apparenza. Visite in officina su appuntamento. Sposato con @Afrodite (è complicato).',
+                            avatar: 'https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/81pKWEZeGkzQ60eyxyXW/pub/bSixPYjOyWoi1kSrjUC4.jpeg'
+                        },
+                        {
+                            id: 'artemide',
+                            username: '@moonhuntress',
+                            name: 'Artemide',
+                            description: 'Dea della Caccia 🏹',
+                            bio: 'Vivo selvaggia e libera. Non interessata al corteggiamento. Caccia tra ragazze ogni luna piena.',
+                            avatar: 'https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/81pKWEZeGkzQ60eyxyXW/pub/yiLk9f52tKKUfQ6dN6rk.jpeg'
+                        },
+                        {
+                            id: 'dioniso',
+                            username: '@partygod_24_7',
+                            name: 'Dioniso',
+                            description: 'Dio del Vino 🍷',
+                            bio: 'Anima di ogni festa da quando esistono le feste. Sì, le ho inventate io.',
+                            avatar: 'https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/81pKWEZeGkzQ60eyxyXW/pub/gW5OFBeZ0xQ71M3ZZlar.jpeg'
+                        },
+                        {
+                            id: 'demetra',
+                            username: '@cerealmom',
+                            name: 'Demetra',
+                            description: 'Dea del Raccolto 🌾',
+                            bio: 'Bio-agricoltura dalla notte dei tempi. Madre in cerca di @Persefone.',
+                            avatar: 'https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/81pKWEZeGkzQ60eyxyXW/pub/6muNqRgtFy8EiAAPhIiy.jpeg'
+                        },
+                        {
+                            id: 'ermes',
+                            username: '@messageboy',
+                            name: 'Ermes',
+                            description: 'Messaggero degli Dei ✈️',
+                            bio: 'Consegne veloci garantite ✓ Disponibile 24/7 ✓ No spam nei DM',
+                            avatar: 'https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/81pKWEZeGkzQ60eyxyXW/pub/Drul9tISWqf4ntQWyZwU.jpeg'
+                        },
+                        {
+                            id: 'ares',
+                            username: '@warmonger',
+                            name: 'Ares',
+                            description: 'Dio della Guerra ⚔️',
+                            bio: 'Se la violenza non risolve i tuoi problemi, non ne stai usando abbastanza.',
+                            avatar: 'https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/81pKWEZeGkzQ60eyxyXW/pub/QUO4EHBg6XqwHEju54a4.jpeg'
+                        },
+                        {
+                            id: 'eracle',
+                            username: '@gymbro12',
+                            name: 'Eracle',
+                            description: 'Semidio più forte 💪',
+                            bio: '12 fatiche completate ✓ Accetto ancora sfide. Niente idre per favore. Disponibile come personal trainer',
+                            avatar: 'https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/81pKWEZeGkzQ60eyxyXW/pub/sl9a4Hrlj90R18jxBviI.jpeg'
+                        },
+                        {
+                            id: 'achille',
+                            username: '@AchillesUnreal',
+                            name: 'Achille',
+                            description: 'Eroe invincibile ⚔️',
+                            bio: '98% invulnerabile. Non chiedetemi foto di talloni. Nato per vincere.',
+                            avatar: 'https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/81pKWEZeGkzQ60eyxyXW/pub/XWjMiNvrPb9avHiiIpJ3.jpeg'
+                        },
+                        {
+                            id: 'orfeo',
+                            username: '@sadboylyra',
+                            name: 'Orfeo',
+                            description: 'Musicista Divino 🎭',
+                            bio: 'Musica da morire (letteralmente). Mai voltarsi indietro. @Euridice per sempre nel cuore.',
+                            avatar: 'https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/81pKWEZeGkzQ60eyxyXW/pub/1R6spfgdBIQZZxKs0HZo.jpeg'
+                        },
+                        {
+                            id: 'teseo',
+                            username: '@mazerunner',
+                            name: 'Teseo',
+                            description: 'Eroe di Atene 🗡️',
+                            bio: 'Il primo ad usare Google Maps nel labirinto (tutto da solo).',
+                            avatar: 'https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/81pKWEZeGkzQ60eyxyXW/pub/d5vFfHM3a0sQ93K0Lk3E.jpeg'
+                        },
+                        {
+                            id: 'odisseo',
+                            username: '@nobodyspecial',
+                            name: 'Odisseo',
+                            description: 'Re di Itaca 👑',
+                            bio: 'Finalmente ho trovato la strada di casa. Vlog in arrivo. L\'eroe preferito di Nessuno.',
+                            avatar: 'https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/81pKWEZeGkzQ60eyxyXW/pub/aWJPcOTLFU5XxEWCUhGQ.jpeg'
+                        },
+                        {
+                            id: 'giasone',
+                            username: '@goldencaptain',
+                            name: 'Giasone',
+                            description: 'Capitano degli Argonauti ⛵',
+                            bio: 'Missione completata ✓ Vello d\'oro acquisito ✓ Situazione sentimentale complicata',
+                            avatar: 'https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/81pKWEZeGkzQ60eyxyXW/pub/9wyyzqabeDVIvaHMXwQ1.jpeg'
+                        },
+                        {
+                            id: 'bellerofonte',
+                            username: '@fly_pegasus',
+                            name: 'Bellerofonte',
+                            description: 'Domatore di Pegaso 🐎',
+                            bio: 'Non è solo un cavallo alato. Influencer aereo. Sky\'s the limit!',
+                            avatar: 'https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/81pKWEZeGkzQ60eyxyXW/pub/faLv8q7LSitDUm4WZlJY.jpeg'
+                        },
+                        {
+                            id: 'medusa',
+                            username: '@dont_look_now',
+                            name: 'Medusa',
+                            description: '👀',
+                            bio: 'Non fissare la foto profilo. Selfie letali garantiti.',
+                            avatar: 'https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/81pKWEZeGkzQ60eyxyXW/pub/KIdVeJohSEe8gCO6tB7q.jpeg'
+                        },
+                        {
+                            id: 'cassandra',
+                            username: '@told_you_so',
+                            name: 'Cassandra',
+                            description: 'Profetessa di Troia 🔮',
+                            bio: 'Ve l\'avevo detto (e ve lo ridirò). Seguitemi per altre profezie inascoltate.',
+                            avatar: 'https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/81pKWEZeGkzQ60eyxyXW/pub/Nmhg9SbX3WkRGnpW63rd.jpeg'
+                        },
+                        {
+                            id: 'persefone',
+                            username: '@HotGirlHades',
+                            name: 'Persefone',
+                            description: 'Regina degli Inferi 🌺',
+                            bio: '6 mesi qui, 6 mesi là. Mangio solo melograno bio.',
+                            avatar: 'https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/81pKWEZeGkzQ60eyxyXW/pub/aaepyuwvm8d4THQ2qo7v.jpeg'
+                        },
+                        {
+                            id: 'medea',
+                            username: '@witchyvibes',
+                            name: 'Medea',
+                            description: 'Principessa della Colchide ⚗️',
+                            bio: 'Potente maga. Non scherzate col mio cuore. Esperta problem solver.',
+                            avatar: 'https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/81pKWEZeGkzQ60eyxyXW/pub/nBfwd3Ai3iDBXp72JkAO.jpeg'
+                        },
+                        {
+                            id: 'arianna',
+                            username: '@thread_queen',
+                            name: 'Arianna',
+                            description: 'Regina Celeste ⭐',
+                            bio: 'Da regina del filo a Dea. Fan delle escape room. In love con @Dioniso 💕 @Teseo chi?',
+                            avatar: 'https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/81pKWEZeGkzQ60eyxyXW/pub/jDdfgmQW5RKQGqchPMJZ.jpeg'
+                        },
+                        {
+                            id: 'minotauro',
+                            username: '@asterione',
+                            name: 'Il Minotauro',
+                            description: 'Principe del Labirinto 🐮',
+                            bio: 'Solo incompreso. Abitante del labirinto. Cerco l\'uscita. No food delivery.',
+                            avatar: 'https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/81pKWEZeGkzQ60eyxyXW/pub/257sgoPT1Vix095HwhRA.jpeg'
+                        },
+                        {
+                            id: 'penelope',
+                            username: '@still_weaving',
+                            name: 'Penelope',
+                            description: 'Regina di Itaca 🧵',
+                            bio: 'Ancora qui che tesso. Paziente ma non in attesa. Pretendenti: vi visualizzo e non rispondo.',
+                            avatar: 'https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/81pKWEZeGkzQ60eyxyXW/pub/jnWGnZn96j7qiSzHLbzi.jpeg'
+                        },
+                        {
+                            id: 'dedalo',
+                            username: '@DedaloInvenzioni',
+                            name: 'Dedalo',
+                            description: 'Inventore Geniale ⚙️',
+                            bio: 'Soluzioni ingegneristiche per problemi reali. Ali in fase beta.',
+                            avatar: 'https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/81pKWEZeGkzQ60eyxyXW/pub/ppfCP18amXKXyK8LOuFM.jpeg'
+                        },
+                        {
+                            id: 'icaro',
+                            username: '@IcarOnTheRise',
+                            name: 'Icaro',
+                            description: 'Sognatore alato ☀️',
+                            bio: 'Don\'t stop believing & aim for the stars. Opinioni personali.',
+                            avatar: 'https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/81pKWEZeGkzQ60eyxyXW/pub/KC87zifueFN3K4fnfxli.jpeg'
+                        },
+                        {
+                            id: 'enea',
+                            username: '@daje_roma',
+                            name: 'Enea',
+                            description: 'Fondatore di Roma 🏛️',
+                            bio: 'Da profugo troiano a fondatore d\'Impero. Porto avanti la tradizione di famiglia.',
+                            avatar: 'https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/81pKWEZeGkzQ60eyxyXW/pub/U5Ebxqk7qFM8eOUdELJP.jpeg'
+                        },
+                        {
+                            id: 'atalanta',
+                            username: '@swiftgoals',
+                            name: 'Atalanta',
+                            description: 'Cacciatrice imbattuta 🏃‍♀️',
+                            bio: 'Più veloce dei tuoi DM. No proposte di matrimonio.',
+                            avatar: 'https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/81pKWEZeGkzQ60eyxyXW/pub/pd6IzAaTf7pe48c0ztFF.jpeg'
+                        },
+                        {
+                            id: 'euridice',
+                            username: '@twicelost',
+                            name: 'Euridice',
+                            description: 'Ninfa del bosco 🌿',
+                            bio: 'Due volte vissuta, due volte persa. Mai guardarsi indietro. Ora faccio più attenzione ai serpenti.',
+                            avatar: 'https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/81pKWEZeGkzQ60eyxyXW/pub/Ofodwg7Gi3uIZDfJtLxX.jpg'
+                        },
+                        {
+                            id: 'perseo',
+                            username: '@slay_king',
+                            name: 'Perseo',
+                            description: 'Killer di mostri ⚔️',
+                            bio: 'Cacciatore di mostri professionista. @Medusa? Easy. Solo selfie con scudo riflettente.',
+                            avatar: 'https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/81pKWEZeGkzQ60eyxyXW/pub/a623cHUlWDO8V6pgWfhg.jpeg'
+                        },
+                        {
+                            id: 'prometeo',
+                            username: '@firecracker',
+                            name: 'Prometeo',
+                            description: 'Amico dei mortali 🔥',
+                            bio: 'Vi ho portato il fuoco. Ne è valsa la pena. Lo rifarei.',
+                            avatar: 'https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/81pKWEZeGkzQ60eyxyXW/pub/MOUYqMmuG6bqSrhVUjgZ.jpeg'
+                        }
+                    ];
+
+                    localStorage.setItem('mythologyProfiles', JSON.stringify(mythologyProfiles));
+                }
+                
+                // Initialize Posts
+                if (!localStorage.getItem('mythologyPosts')) {
+                    const mythologyPosts = [
+                        {
+                            id: 'b92UpGkUTUK66Ni9NGcoYw',
+                            userId: 'efesto',
+                            content: 'Nuovo aggiornamento: ho installato il Wi-Fi sull\'Olimpo. La connessione è divina ma @Zeus continua a sovraccaricare il sistema con i suoi fulmini... 🤦‍♂️ #TechSupport',
+                            date: new Date('2024-12-07').toISOString(),
+                            image: '',
+                            comments: []
+                        },
+                        {
+                            id: 'h0QAwYg4Q72yUz.Al0Jujw',
+                            userId: 'eracle',
+                            content: 'Day 458 di pulizie nella stalla di Augia. Chi altro sta seguendo il mio workout challenge? #EracleFit #StallePulite',
+                            date: new Date('2024-12-08T03:26:58').toISOString(),
+                            image: '',
+                            comments: []
+                        },
+                        {
+                            id: 'sic8NjrhRvaaq3uLf7wiwA',
+                            userId: 'dioniso',
+                            content: 'Ho appena scoperto il prosecco. È ufficiale: il vino antico è superato. Nuovo trend in arrivo. 🍾 #VinoModerno',
+                            date: new Date('2024-12-08T03:27:57').toISOString(),
+                            image: '',
+                            comments: []
+                        },
+                        {
+                            id: 'HLw3C4jRTHaD3FmKZILcvA',
+                            userId: 'medea',
+                            content: 'bestie, mi chiedete sempre qual è la mia skincare routine per rimanere ✨that girl✨\nspoiler: è la vendetta 🔪\n#toxicqueen #girlboss #real',
+                            date: new Date('2024-12-08T16:31:20').toISOString(),
+                            image: '',
+                            comments: []
+                        },
+                        {
+                            id: 'Dk1-s3vNR2C3IS2rodVIrA',
+                            userId: 'arianna',
+                            content: 'lifehack: se ti perdi nel labirinto segui il filo rosso bestie\n@Teseo di niente btw 🙄\n#manipulation #pickmeera',
+                            date: new Date('2024-12-08T16:42:50').toISOString(),
+                            image: '',
+                            comments: []
+                        },
+                        {
+                            id: 'xnvKXCaVRXOL2iiIE5nQ-Q',
+                            userId: 'dedalo',
+                            content: 'Unpopular opinion: la terra non è piatta né sferica, è un labirinto',
+                            date: new Date('2024-12-08T16:44:58').toISOString(),
+                            image: 'https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/81pKWEZeGkzQ60eyxyXW/pub/c8NGHe02mkPyNfIEzFoi.jpeg',
+                            comments: []
+                        },
+                        {
+                            id: '7YOrcILAQV6xZJa9XSa.xg',
+                            userId: 'cassandra',
+                            content: 'Le mie prediction per il 2025:\n\nMercury retrograde sarà un caos\nStock market di Troia 📉\nNon mi crederete comunque',
+                            date: new Date('2024-12-08T16:47:33').toISOString(),
+                            image: 'https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/81pKWEZeGkzQ60eyxyXW/pub/hqYg28pdcWlRKR87JYqw.jpeg',
+                            comments: []
+                        },
+                        {
+                            id: 'GVFEPxFyTuSSUhWvQE3K9A',
+                            userId: 'prometeo',
+                            content: 'ho appena droppato la mia collezione NFT "Stolen Fire" 🔥\nmint price: 0.1 ETH',
+                            date: new Date('2024-12-08T16:50:45').toISOString(),
+                            image: 'https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/81pKWEZeGkzQ60eyxyXW/pub/9MTuu7L09PkEBrs2FCGY.jpeg',
+                            comments: []
+                        },
+                        {
+                            id: '3Dr8Aq8OQTmOki0TF1dy0w',
+                            userId: 'orfeo',
+                            content: 'provo a fare una challenge: non guardare indietro per 24 ore',
+                            date: new Date('2024-12-08T16:56:06').toISOString(),
+                            image: 'https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/81pKWEZeGkzQ60eyxyXW/pub/UgKaXwdaJTpamb9C3XNb.jpeg',
+                            comments: []
+                        },
+                        {
+                            id: 'qft.BqPsReiwcp-KVzcmXw',
+                            userId: 'arianna',
+                            content: 'POV: il tuo boyfriend ti abbandona su un\'isola deserta ma poi arriva un dio tutto ✨wine boy summer✨',
+                            date: new Date('2024-12-08T16:59:07').toISOString(),
+                            image: 'https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/81pKWEZeGkzQ60eyxyXW/pub/APTVhhjYcKOh5jJtLGjS.jpeg',
+                            comments: []
+                        },
+                        {
+                            id: 'Hfpebui5Q--55I438nlxuA',
+                            userId: 'medea',
+                            content: 'relationship advice: se lui ti tradisce, manda regali ✨maledetti✨ alla nuova girl',
+                            date: new Date('2024-12-08T17:01:47').toISOString(),
+                            image: 'https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/81pKWEZeGkzQ60eyxyXW/pub/6GLPq34JskRD44rOkalB.jpeg',
+                            comments: []
+                        },
+                        {
+                            id: '35LBISNvTYurhirNsy-Dgg',
+                            userId: 'atena',
+                            content: 'Opening my podcast "Philosophy Tea ☕️"\nGuest speciale: Aracne per parlare di cancel culture',
+                            date: new Date('2024-12-08T17:04:51').toISOString(),
+                            image: 'https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/81pKWEZeGkzQ60eyxyXW/pub/KLNGHvFcHweJJo4y1JhH.jpeg',
+                            comments: []
+                        },
+                        {
+                            id: 'gc5nBUtlRcCc2kaMQ0I1.g',
+                            userId: 'afrodite',
+                            content: 'GRWM per il giudizio di Paride 💅\nPrimo step: essere letteralmente la più bella',
+                            date: new Date('2024-12-08T17:08:47').toISOString(),
+                            image: 'https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/81pKWEZeGkzQ60eyxyXW/pub/xAXbir00ZmL8QeJgIQBr.jpeg',
+                            comments: []
+                        },
+                        {
+                            id: 'km8k32j0TDeWbFbZTmrhVA',
+                            userId: 'enea',
+                            content: 'room tour della mia nuova startup (Roma)',
+                            date: new Date('2024-12-08T17:17:22').toISOString(),
+                            image: 'https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/81pKWEZeGkzQ60eyxyXW/pub/PUf4TDUispjjMTPQiZTp.jpeg',
+                            comments: []
+                        },
+                        {
+                            id: '1skDFrNwR0ioxzaJCFd5Kg',
+                            userId: 'poseidone',
+                            content: 'rate il mio nuovo tridente da gaming RGB',
+                            date: new Date('2024-12-08T17:20:14').toISOString(),
+                            image: 'https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/81pKWEZeGkzQ60eyxyXW/pub/QEg14xUNPPi85qqL2VGw.jpeg',
+                            comments: []
+                        },
+                        {
+                            id: 'oPMC-CfsQ3Wh16T76Rhiig',
+                            userId: 'giasone',
+                            content: 'ho perso il vello d\'oro in lavanderia 💀',
+                            date: new Date('2024-12-08T17:25:10').toISOString(),
+                            image: 'https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/81pKWEZeGkzQ60eyxyXW/pub/QZOmKM5ib4LI8FKJd9Nl.jpeg',
+                            comments: []
+                        },
+                        {
+                            id: 'cD9m-gWDSeSZG1dym7ovOg',
+                            userId: 'dedalo',
+                            content: 'drop della mia nuova collezione tech: Ali 2.0\nCaratteristiche:\n\nModalità autopilota\nParental control\nProtezione anti-sole',
+                            date: new Date('2024-12-08T17:27:44').toISOString(),
+                            image: 'https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/81pKWEZeGkzQ60eyxyXW/pub/7P0rUicEXx9ezjtlJnmA.jpeg',
+                            comments: []
+                        },
+                        {
+                            id: 'Pk6VsxStTUaS1LSopnz3Rg',
+                            userId: 'orfeo',
+                            content: 'New single drop: "Look Back in Anger 💔 (Orfeo\'s Version) (From the Vault)"\nora su Spotify',
+                            date: new Date('2024-12-08T17:32:25').toISOString(),
+                            image: 'https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/81pKWEZeGkzQ60eyxyXW/pub/IvzIM63R1Bs3Qn3Un4bp.jpeg',
+                            comments: []
+                        }
+                    ];
+                    
+                    // Add comments to posts
+                    const comments = [
+                        {
+                            id: 'comment1',
+                            postId: 'b92UpGkUTUK66Ni9NGcoYw',
+                            userId: 'zeus',
+                            text: 'Non è colpa mia se ogni volta che mi arrabbio salta la corrente. @Efesto aggiusta sta roba! #ProblemiDivini',
+                            date: new Date('2024-12-08T03:24:23').toISOString()
+                        },
+                        {
+                            id: 'comment2',
+                            postId: 'sic8NjrhRvaaq3uLf7wiwA',
+                            userId: 'demetra',
+                            text: 'Spero solo che tu abbia usato uva biologica. Altrimenti non approvo. 🌱',
+                            date: new Date('2024-12-08T03:28:28').toISOString()
+                        },
+                        {
+                            id: 'comment3',
+                            postId: 'sic8NjrhRvaaq3uLf7wiwA',
+                            userId: 'dioniso',
+                            text: 'Tranquilla, mamma, tutto bio. Anche l\'euforia!',
+                            date: new Date('2024-12-08T03:28:54').toISOString()
+                        },
+                        {
+                            id: 'comment4',
+                            postId: 'xnvKXCaVRXOL2iiIE5nQ-Q',
+                            userId: 'minotauro',
+                            text: 'finalmente qualcuno che dice la verità fr fr',
+                            date: new Date('2024-12-08T16:45:49').toISOString()
+                        },
+                        {
+                            id: 'comment5',
+                            postId: 'GVFEPxFyTuSSUhWvQE3K9A',
+                            userId: 'zeus',
+                            text: 'reported for theft + copyright infringement\nti distruggerò il fegato in tribunale',
+                            date: new Date('2024-12-08T16:51:17').toISOString()
+                        },
+                        {
+                            id: 'comment6',
+                            postId: '3Dr8Aq8OQTmOki0TF1dy0w',
+                            userId: 'euridice',
+                            text: 'letteralmente morta 💀',
+                            date: new Date('2024-12-08T16:56:31').toISOString()
+                        },
+                        {
+                            id: 'comment7',
+                            postId: '3Dr8Aq8OQTmOki0TF1dy0w',
+                            userId: 'ade',
+                            text: 'Bro fallirai dopo 2 minuti',
+                            date: new Date('2024-12-08T16:56:48').toISOString()
+                        },
+                        {
+                            id: 'comment8',
+                            postId: 'qft.BqPsReiwcp-KVzcmXw',
+                            userId: 'dioniso',
+                            text: 'upgrade sis 💅✨',
+                            date: new Date('2024-12-08T16:59:30').toISOString()
+                        },
+                        {
+                            id: 'comment9',
+                            postId: 'Hfpebui5Q--55I438nlxuA',
+                            userId: 'giasone',
+                            text: 'pls basta mandarmi TikTok cursati 😭',
+                            date: new Date('2024-12-08T17:02:24').toISOString()
+                        },
+                        {
+                            id: 'comment10',
+                            postId: 'Hfpebui5Q--55I438nlxuA',
+                            userId: 'era',
+                            text: 'Queen behavior 👑',
+                            date: new Date('2024-12-08T17:02:43').toISOString()
+                        },
+                        {
+                            id: 'comment11',
+                            postId: 'gc5nBUtlRcCc2kaMQ0I1.g',
+                            userId: 'atena',
+                            text: 'pick me behavior + L + ratio',
+                            date: new Date('2024-12-08T17:09:14').toISOString()
+                        },
+                        {
+                            id: 'comment12',
+                            postId: '1skDFrNwR0ioxzaJCFd5Kg',
+                            userId: 'efesto',
+                            text: 'mi devi ancora pagare la commissione smh',
+                            date: new Date('2024-12-08T17:20:30').toISOString()
+                        },
+                        {
+                            id: 'comment13',
+                            postId: 'cD9m-gWDSeSZG1dym7ovOg',
+                            userId: 'icaro',
+                            text: 'padre ti prego sblocca il parental control',
+                            date: new Date('2024-12-08T17:28:01').toISOString()
+                        },
+                        {
+                            id: 'comment14',
+                            postId: 'Pk6VsxStTUaS1LSopnz3Rg',
+                            userId: 'perseo',
+                            text: 'certified sad bop',
+                            date: new Date('2024-12-08T17:32:50').toISOString()
+                        }
+                    ];
+                    
+                    // Add comments to their respective posts
+                    comments.forEach(comment => {
+                        const postIndex = mythologyPosts.findIndex(post => post.id === comment.postId);
+                        if (postIndex !== -1) {
+                            if (!mythologyPosts[postIndex].comments) {
+                                mythologyPosts[postIndex].comments = [];
+                            }
+                            // Remove the postId property before adding to post
+                            const { postId, ...commentData } = comment;
+                            mythologyPosts[postIndex].comments.push(commentData);
+                        }
+                    });
+                    
+                    localStorage.setItem('mythologyPosts', JSON.stringify(mythologyPosts));
+                }
+            },
+            
+            getProfiles() {
+                return JSON.parse(localStorage.getItem('mythologyProfiles') || '[]');
+            },
+            
+            getProfileById(id) {
+                const allProfiles = this.getProfiles();
+                const profile = allProfiles.find(profile => profile.id.toLowerCase() === id.toLowerCase());
+                return profile || null;
+            },
+            
+            getProfileByName(name) {
+                const allProfiles = this.getProfiles();
+                const profile = allProfiles.find(profile => profile.name.toLowerCase() === name.toLowerCase());
+                return profile || null;
+            },
+            
+            addProfile(profile) {
+                const profiles = this.getProfiles();
+                // Generate ID based on name if not provided
+                if (!profile.id) {
+                    profile.id = profile.name.toLowerCase().replace(/\s/g, '');
+                }
+                profiles.push(profile);
+                localStorage.setItem('mythologyProfiles', JSON.stringify(profiles));
+                return profile;
+            },
+            
+            getPosts() {
+                return JSON.parse(localStorage.getItem('mythologyPosts') || '[]');
+            },
+            
+            getPostById(id) {
+                const posts = this.getPosts();
+                return posts.find(post => post.id === id) || null;
+            },
+            
+            addPost(post) {
+                const posts = this.getPosts();
+                // Generate ID if not provided
+                if (!post.id) {
+                    post.id = 'post' + Date.now();
+                }
+                // Add timestamp if not provided
+                if (!post.date) {
+                    post.date = new Date().toISOString();
+                }
+                // Initialize empty comments array
+                if (!post.comments) {
+                    post.comments = [];
+                }
+                posts.push(post);
+                localStorage.setItem('mythologyPosts', JSON.stringify(posts));
+                return post;
+            },
+            
+            addCommentToPost(postId, comment) {
+                const posts = this.getPosts();
+                const postIndex = posts.findIndex(post => post.id === postId);
+                
+                if (postIndex !== -1) {
+                    // Generate comment ID
+                    comment.id = 'comment' + Date.now();
+                    // Add timestamp if not provided
+                    if (!comment.date) {
+                        comment.date = new Date().toISOString();
+                    }
+                    
+                    if (!posts[postIndex].comments) {
+                        posts[postIndex].comments = [];
+                    }
+                    
+                    posts[postIndex].comments.push(comment);
+                    localStorage.setItem('mythologyPosts', JSON.stringify(posts));
+                    return comment;
+                }
+                return null;
+            }
+        };
+        
+        // UI manager
+        const uiManager = {
+            init() {
+                this.initNavigationHandlers();
+                this.loadProfilesView();
+                
+                // Add event listeners
+                document.getElementById('add-profile-btn').addEventListener('click', () => this.showAddProfileView());
+                document.getElementById('back-from-add-profile').addEventListener('click', () => this.backToProfiles());
+                document.getElementById('save-profile').addEventListener('click', () => this.saveNewProfile());
+                
+                document.getElementById('add-post-btn').addEventListener('click', () => this.showAddPostView());
+                document.getElementById('back-from-add-post').addEventListener('click', () => this.backToPosts());
+                document.getElementById('save-post').addEventListener('click', () => this.saveNewPost());
+                
+                document.getElementById('back-from-profile').addEventListener('click', () => this.backToProfiles());
+                document.getElementById('back-from-post').addEventListener('click', () => this.backToPosts());
+                
+                document.getElementById('submit-comment').addEventListener('click', () => this.addComment());
+                
+                document.getElementById('profile-search').addEventListener('input', (e) => this.searchProfiles(e.target.value));
+                document.getElementById('post-search').addEventListener('input', (e) => this.searchPosts(e.target.value));
+                
+                // Hide loading screen after initialization
+                setTimeout(() => {
+                    document.getElementById('loading-screen').classList.add('hidden');
+                }, 1000);
+            },
+            
+            initNavigationHandlers() {
+                document.getElementById('nav-profiles').addEventListener('click', (e) => {
+                    e.preventDefault();
+                    this.showView('profiles-view');
+                    document.getElementById('nav-profiles').classList.add('active');
+                    document.getElementById('nav-posts').classList.remove('active');
+                });
+                
+                document.getElementById('nav-posts').addEventListener('click', (e) => {
+                    e.preventDefault();
+                    this.showView('posts-view');
+                    this.loadPostsView();
+                    document.getElementById('nav-posts').classList.add('active');
+                    document.getElementById('nav-profiles').classList.remove('active');
+                });
+            },
+            
+            showView(viewId) {
+                const views = ['profiles-view', 'posts-view', 'profile-detail-view', 'post-detail-view', 'add-profile-view', 'add-post-view'];
+                views.forEach(view => {
+                    document.getElementById(view).classList.add('hidden');
+                });
+                document.getElementById(viewId).classList.remove('hidden');
+                
+                // Load view content if needed
+                if (viewId === 'profiles-view') {
+                    this.loadProfilesView();
+                } else if (viewId === 'posts-view') {
+                    this.loadPostsView();
+                }
+                
+                // Scroll to top when changing views
+                window.scrollTo(0, 0);
+            },
+            
+            loadProfilesView() {
+                const profiles = dataManager.getProfiles();
+                const profilesGrid = document.getElementById('profiles-grid');
+                profilesGrid.innerHTML = '';
+                
+                profiles.forEach(profile => {
+                    const profileCard = document.createElement('div');
+                    profileCard.className = 'profile-card';
+                    profileCard.innerHTML = `
+                        <div class="profile-avatar">
+                            <img src="${profile.avatar}" alt="${profile.name}">
+                            <button class="more-options">⋯</button>
+                        </div>
+                        <div class="username">${profile.username}</div>
+                        <div class="profile-name">${profile.name}</div>
+                        <div class="profile-description">${profile.description}</div>
+                    `;
+                    profileCard.addEventListener('click', () => this.showProfileDetail(profile.id));
+                    profilesGrid.appendChild(profileCard);
+                });
+            },
+            
+            formatContent(content) {
+                if (!content) return '';
+                
+                // Format hashtags
+                let formatted = content.replace(/#(\w+)/g, '<span class="hashtag">#$1</span>');
+                
+                // Format mentions
+                formatted = formatted.replace(/@(\w+)/g, '<span class="mention">@$1</span>');
+                
+                // Convert line breaks to <br>
+                formatted = formatted.replace(/\n/g, '<br>');
+                
+                return formatted;
+            },
+            
+            loadPostsView() {
+                const posts = dataManager.getPosts();
+                const postsList = document.getElementById('posts-list');
+                postsList.innerHTML = '';
+                
+                posts.sort((a, b) => new Date(b.date) - new Date(a.date)).forEach(post => {
+                    const profile = dataManager.getProfileById(post.userId);
+                    if (!profile) return;
+                    
+                    const postItem = document.createElement('div');
+                    postItem.className = 'post-item';
+                    
+                    // Format date
+                    const postDate = new Date(post.date);
+                    const formattedDate = postDate.toLocaleDateString('it-IT');
+                    
+                    let postHTML = `
+                        <div class="post-header">
+                            <img src="${profile.avatar}" alt="${profile.name}">
+                            <div>
+                                <div class="username">${profile.username}</div>
+                                <div class="profile-name">${profile.name}</div>
+                            </div>
+                            <button class="more-options" style="margin-left: auto;">⋯</button>
+                        </div>
+                        <div class="post-content">
+                    `;
+                    
+                    // Add post text 
+                    postHTML += `<div class="post-text">${this.formatContent(post.content)}</div>`;
+                    
+                    // Add image if present (now as a side element)
+                    if (post.image && post.image.trim() !== '') {
+                        postHTML += `
+                            <div class="post-image-container">
+                                <img src="${post.image}" alt="Post image" class="post-image">
+                            </div>
+                        `;
+                    }
+                    
+                    postHTML += `
+                        </div>
+                        <div class="post-meta">
+                            ${formattedDate} · ${post.comments.length} commenti
+                        </div>
+                    `;
+                    
+                    postItem.innerHTML = postHTML;
+                    
+                    postItem.addEventListener('click', () => this.showPostDetail(post.id));
+                    postsList.appendChild(postItem);
+                });
+            },
+            
+            showProfileDetail(profileId) {
+                const profile = dataManager.getProfileById(profileId);
+                if (!profile) return;
+                
+                const profileDetailContent = document.getElementById('profile-detail-content');
+                profileDetailContent.innerHTML = `
+                    <div class="profile-header">
+                        <img src="${profile.avatar}" alt="${profile.name}">
+                        <div class="profile-info">
+                            <h1>${profile.name}</h1>
+                            <p>${profile.username}</p>
+                            <p>${profile.description}</p>
+                        </div>
+                    </div>
+                    <div class="profile-bio">
+                        <div class="bio-title">Bio</div>
+                        <p>${profile.bio || 'No bio available.'}</p>
+                    </div>
+                `;
+                
+                this.showView('profile-detail-view');
+            },
+            
+            showPostDetail(postId) {
+                const post = dataManager.getPostById(postId);
+                if (!post) return;
+                
+                const profile = dataManager.getProfileById(post.userId);
+                if (!profile) return;
+                
+                const postDetailContent = document.getElementById('post-detail-content');
+                
+                // Format date
+                const postDate = new Date(post.date);
+                const options = { year: 'numeric', month: 'numeric', day: 'numeric', hour: '2-digit', minute: '2-digit' };
+                const formattedDate = postDate.toLocaleDateString('it-IT', options);
+                
+                let postHtml = `
+                    <div class="post-header">
+                        <img src="${profile.avatar}" alt="${profile.name}">
+                        <div>
+                            <div class="profile-name">${profile.name}</div>
+                            <div class="username">${profile.username}</div>
+                        </div>
+                    </div>
+                    
+                    <div class="post-detail-text">${this.formatContent(post.content)}</div>
+                `;
+                
+                if (post.image && post.image.trim() !== '') {
+                    postHtml += `<img src="${post.image}" alt="Post image" class="post-detail-image">`;
+                }
+                
+                postHtml += `
+                    <div class="post-date">Data: ${formattedDate}</div>
+                    <div class="comments-section">
+                        <h3 class="comments-title">Commenti</h3>
+                `;
+                
+                if (post.comments && post.comments.length > 0) {
+                    post.comments.forEach(comment => {
+                        const commentProfile = dataManager.getProfileById(comment.userId);
+                        if (!commentProfile) return;
+                        
+                        const commentDate = new Date(comment.date);
+                        const formattedCommentDate = commentDate.toLocaleDateString('it-IT');
+                        
+                        postHtml += `
+                            <div class="comment">
+                                <img src="${commentProfile.avatar}" alt="${commentProfile.name}">
+                                <div class="comment-content">
+                                    <div class="comment-author">${commentProfile.name} <span class="comment-date">${formattedCommentDate}</span></div>
+                                    <div class="comment-text">${this.formatContent(comment.text)}</div>
+                                </div>
+                            </div>
+                        `;
+                    });
+                } else {
+                    postHtml += `<p>No comments yet.</p>`;
+                }
+                
+                postHtml += `</div>`;
+                
+                postDetailContent.innerHTML = postHtml;
+                
+                // Fill the user selector for commenting
+                const userSelector = document.getElementById('comment-user-selector');
+                userSelector.innerHTML = '';
+                
+                const allProfiles = dataManager.getProfiles();
+                allProfiles.forEach(profile => {
+                    const option = document.createElement('option');
+                    option.value = profile.id;
+                    option.textContent = profile.name;
+                    userSelector.appendChild(option);
+                });
+                
+                // Store current post ID for comment submission
+                userSelector.dataset.postId = post.id;
+                
+                this.showView('post-detail-view');
+            },
+            
+            addComment() {
+                const postId = document.getElementById('comment-user-selector').dataset.postId;
+                const userId = document.getElementById('comment-user-selector').value;
+                const commentText = document.getElementById('comment-input').value.trim();
+                
+                if (!commentText) {
+                    alert('Please enter a comment.');
+                    return;
+                }
+                
+                const comment = {
+                    userId,
+                    text: commentText,
+                    date: new Date().toISOString()
+                };
+                
+                dataManager.addCommentToPost(postId, comment);
+                
+                // Update the view
+                this.showPostDetail(postId);
+                
+                // Clear input
+                document.getElementById('comment-input').value = '';
+            },
+            
+            showAddProfileView() {
+                // Clear form
+                document.getElementById('profile-username').value = '';
+                document.getElementById('profile-name').value = '';
+                document.getElementById('profile-description').value = '';
+                document.getElementById('profile-bio').value = '';
+                document.getElementById('profile-avatar').value = '';
+                
+                this.showView('add-profile-view');
+            },
+            
+            backToProfiles() {
+                this.showView('profiles-view');
+            },
+            
+            saveNewProfile() {
+                const username = document.getElementById('profile-username').value.trim();
+                const name = document.getElementById('profile-name').value.trim();
+                const description = document.getElementById('profile-description').value.trim();
+                const bio = document.getElementById('profile-bio').value.trim();
+                const avatar = document.getElementById('profile-avatar').value.trim();
+                
+                if (!username || !name) {
+                    alert('Username and name are required.');
+                    return;
+                }
+                
+                // Generate avatar if not provided
+                const avatarUrl = avatar || `https://ui-avatars.com/api/?name=${encodeURIComponent(name)}&background=4B0082&color=fff`;
+                
+                const profile = {
+                    username,
+                    name,
+                    description,
+                    bio,
+                    avatar: avatarUrl
+                };
+                
+                dataManager.addProfile(profile);
+                this.backToProfiles();
+            },
+            
+            showAddPostView() {
+                // Clear form
+                document.getElementById('post-content').value = '';
+                document.getElementById('post-image').value = '';
+                
+                // Fill profile selector
+                const profileSelector = document.getElementById('post-as-profile');
+                profileSelector.innerHTML = '';
+                
+                const allProfiles = dataManager.getProfiles();
+                allProfiles.forEach(profile => {
+                    const option = document.createElement('option');
+                    option.value = profile.id;
+                    option.textContent = profile.name;
+                    profileSelector.appendChild(option);
+                });
+                
+                this.showView('add-post-view');
+            },
+            
+            backToPosts() {
+                this.showView('posts-view');
+            },
+            
+            saveNewPost() {
+                const userId = document.getElementById('post-as-profile').value;
+                const content = document.getElementById('post-content').value.trim();
+                const image = document.getElementById('post-image').value.trim();
+                
+                if (!userId || !content) {
+                    alert('Profile and content are required.');
+                    return;
+                }
+                
+                const post = {
+                    userId,
+                    content,
+                    image,
+                    date: new Date().toISOString(),
+                    comments: []
+                };
+                
+                dataManager.addPost(post);
+                this.backToPosts();
+            },
+            
+            searchProfiles(query) {
+                if (!query) {
+                    this.loadProfilesView();
+                    return;
+                }
+                
+                query = query.toLowerCase();
+                const profiles = dataManager.getProfiles().filter(profile => 
+                    profile.name.toLowerCase().includes(query) || 
+                    profile.username.toLowerCase().includes(query) ||
+                    profile.description.toLowerCase().includes(query)
+                );
+                
+                const profilesGrid = document.getElementById('profiles-grid');
+                profilesGrid.innerHTML = '';
+                
+                if (profiles.length === 0) {
+                    profilesGrid.innerHTML = '<p style="text-align: center; padding: 20px;">No profiles found.</p>';
+                    return;
+                }
+                
+                profiles.forEach(profile => {
+                    const profileCard = document.createElement('div');
+                    profileCard.className = 'profile-card';
+                    profileCard.innerHTML = `
+                        <div class="profile-avatar">
+                            <img src="${profile.avatar}" alt="${profile.name}">
+                            <button class="more-options">⋯</button>
+                        </div>
+                        <div class="username">${profile.username}</div>
+                        <div class="profile-name">${profile.name}</div>
+                        <div class="profile-description">${profile.description}</div>
+                    `;
+                    profileCard.addEventListener('click', () => this.showProfileDetail(profile.id));
+                    profilesGrid.appendChild(profileCard);
+                });
+            },
+            
+            searchPosts(query) {
+                if (!query) {
+                    this.loadPostsView();
+                    return;
+                }
+                
+                query = query.toLowerCase();
+                const posts = dataManager.getPosts().filter(post => 
+                    post.content.toLowerCase().includes(query)
+                );
+                
+                const postsList = document.getElementById('posts-list');
+                postsList.innerHTML = '';
+                
+                if (posts.length === 0) {
+                    postsList.innerHTML = '<p style="text-align: center; padding: 20px;">No posts found.</p>';
+                    return;
+                }
+                
+                posts.sort((a, b) => new Date(b.date) - new Date(a.date)).forEach(post => {
+                    const profile = dataManager.getProfileById(post.userId);
+                    if (!profile) return;
+                    
+                    const postItem = document.createElement('div');
+                    postItem.className = 'post-item';
+                    
+                    // Format date
+                    const postDate = new Date(post.date);
+                    const formattedDate = postDate.toLocaleDateString('it-IT');
+                    
+                    let postHTML = `
+                        <div class="post-header">
+                            <img src="${profile.avatar}" alt="${profile.name}">
+                            <div>
+                                <div class="username">${profile.username}</div>
+                                <div class="profile-name">${profile.name}</div>
+                            </div>
+                            <button class="more-options" style="margin-left: auto;">⋯</button>
+                        </div>
+                        <div class="post-content">
+                    `;
+                    
+                    // Add post text 
+                    postHTML += `<div class="post-text">${this.formatContent(post.content)}</div>`;
+                    
+                    // Add image if present (now as a side element)
+                    if (post.image && post.image.trim() !== '') {
+                        postHTML += `
+                            <div class="post-image-container">
+                                <img src="${post.image}" alt="Post image" class="post-image">
+                            </div>
+                        `;
+                    }
+                    
+                    postHTML += `
+                        </div>
+                        <div class="post-meta">
+                            ${formattedDate} · ${post.comments.length} commenti
+                        </div>
+                    `;
+                    
+                    postItem.innerHTML = postHTML;
+                    
+                    postItem.addEventListener('click', () => this.showPostDetail(post.id));
+                    postsList.appendChild(postItem);
+                });
+            }
+        };
+        
+        // Initialize the application
+        document.addEventListener('DOMContentLoaded', () => {
+            dataManager.init();
+            uiManager.init();
+        });
+    </script>
+</body>
+</html>
