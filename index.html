@@ -104,11 +104,18 @@
             cursor: pointer;
         }
 
+        /* Consistent styling for all profile images */
+        .profile-card img,
+        .post-header img,
+        .profile-header img,
+        .comment img {
+            border-radius: 50%;
+            object-fit: cover; /* This prevents stretching */
+        }
+
         .profile-card img {
             width: 80px;
             height: 80px;
-            border-radius: 50%;
-            object-fit: cover;
             margin-bottom: 5px;
         }
 
@@ -167,7 +174,6 @@
         .post-header img {
             width: 40px;
             height: 40px;
-            border-radius: 50%;
             margin-right: 10px;
         }
 
@@ -266,7 +272,6 @@
         .comment img {
             width: 40px;
             height: 40px;
-            border-radius: 50%;
             margin-right: 10px;
             flex-shrink: 0;
         }
@@ -349,7 +354,6 @@
         .profile-header img {
             width: 80px;
             height: 80px;
-            border-radius: 50%;
             margin-right: 15px;
         }
 
@@ -817,7 +821,7 @@
                             name: 'Achille',
                             description: 'Eroe invincibile ⚔️',
                             bio: '98% invulnerabile. Non chiedetemi foto di talloni. Nato per vincere.',
-                            avatar: 'https://github.com/MikCil/musenet/blob/main/assets/profiles/achilles.jpeg'
+                            avatar: 'https://storage.googleapis.com/glide-prod.appspot.com/uploads-v2/81pKWEZeGkzQ60eyxyXW/pub/XWjMiNvrPb9avHiiIpJ3.jpeg'
                         },
                         {
                             id: 'orfeo',
